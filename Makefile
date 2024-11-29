@@ -2,7 +2,6 @@ all: parser
 
 OBJS = parser.o  \
        codegen.o \
-	   node.o	\
        main.o    \
        tokens.o  \
        corefn.o  \

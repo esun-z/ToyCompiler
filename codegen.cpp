@@ -50,7 +50,7 @@ static Type *typeOf(const NIdentifier& type)
 	if (type.name.compare("int") == 0) {
 		return Type::getInt64Ty(MyContext);
 	}
-	else if (type.name.compare("double") == 0) {
+	else if (type.name.compare("float") == 0) {
 		return Type::getDoubleTy(MyContext);
 	}
 	return Type::getVoidTy(MyContext);
@@ -165,7 +165,7 @@ Value* NVariableDeclaration::codeGen(CodeGenContext& context)
 	return alloc;
 }
 
-Value* NExternDeclaration::codeGen(CodeGenContext& context)
+Value* NConstDeclaration::codeGen(CodeGenContext& context)
 {
     vector<Type*> argTypes;
     VariableList::const_iterator it;

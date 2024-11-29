@@ -1,11 +1,12 @@
-extern void printi(int val)
+const void printi(int val);
 
-int do_math(int a) {
-  int x = a * 5
-  return x + 3
+int doMath(int a) {
+  int x = a * 5;
+  float y = a / 2;
+  return x + y;
 }
 
 
-echo(do_math(11))
-echo(do_math(12))
-printi(10)
+echo(doMath(11));
+echo(doMath(12));
+printi(10);

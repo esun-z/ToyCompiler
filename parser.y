@@ -13,6 +13,8 @@
 	Node *node;
 	NBlock *block;
 	NExpression *expr;
+	NIfStatement *ifstmt;
+	NWhileStatement *whilestmt;
 	NStatement *stmt;
 	NIdentifier *ident;
 	NVariableDeclaration *var_decl;
@@ -26,11 +28,13 @@
    match our tokens.l lex file. We also define the node type
    they represent.
  */
+%debug
 %token <string> TIDENTIFIER TINTEGER TDOUBLE
 %token <token> TCEQ TCNE TCLT TCLE TCGT TCGE TEQUAL
-%token <token> TLPAREN TRPAREN TLBRACE TRBRACE TCOMMA TDOT
-%token <token> TPLUS TMINUS TMUL TDIV
-%token <token> TRETURN TEXTERN
+%token <token> TLPAREN TRPAREN TLBRACKET TRBRACKET TLBRACE TRBRACE TCOMMA TDOT TSEMICOLON
+%token <token> TPLUS TMINUS TMUL TDIV TMOD TNOT
+%token <token> TRETURN TCONST TIF TELSE TWHILE TBREAK TCONTINUE
+%token <token> TOR TAND
 
 /* Define the type of node our nonterminal symbols represent.
    The types refer to the %union declaration above. Ex: when
@@ -42,12 +46,14 @@
 %type <varvec> func_decl_args
 %type <exprvec> call_args
 %type <block> program stmts block
-%type <stmt> stmt var_decl func_decl extern_decl
+%type <stmt> stmt var_decl func_decl const_decl ifstmt whilestmt
 %type <token> comparison
 
 /* Operator precedence for mathematical operators */
 %left TPLUS TMINUS
 %left TMUL TDIV
+
+
 
 %start program
 
@@ -57,12 +63,30 @@ program : stmts { programBlock = $1; }
 		;
 		
 stmts : stmt { $$ = new NBlock(); $$->statements.push_back($<stmt>1); }
+	  | ifstmt { $$ = new NBlock(); $$->statements.push_back($<stmt>1); }
 	  | stmts stmt { $1->statements.push_back($<stmt>2); }
+	  | stmts TLBRACE stmts TRBRACE { $$->blocks.push_back($<block>3); }
+	  | stmts ifstmt { $$->statements.push_back($<stmt>2); }
+	  | stmts whilestmt { $$->statements.push_back($<stmt>2); }
 	  ;
 
-stmt : var_decl | func_decl | extern_decl
-	 | expr { $$ = new NExpressionStatement(*$1); }
-	 | TRETURN expr { $$ = new NReturnStatement(*$2); }
+ifstmt	: TIF TLPAREN expr TRPAREN block { $$ = new NIfStatement(*$3, *$5); }
+		| TIF TLPAREN expr TRPAREN stmt { $$ = new NIfStatement(*$3, *(new NBlock(*$5))); }
+		| TIF TLPAREN expr TRPAREN block TELSE block { $$ = new NIfStatement(*$3, *$5, *$7); }
+		| TIF TLPAREN expr TRPAREN stmt TELSE block { $$ = new NIfStatement(*$3, *(new NBlock(*$5)), *$7); }
+		| TIF TLPAREN expr TRPAREN block TELSE stmt { $$ = new NIfStatement(*$3, *$5, *(new NBlock(*$7))); }
+		| TIF TLPAREN expr TRPAREN stmt TELSE stmt { $$ = new NIfStatement(*$3, *(new NBlock(*$5)), *(new NBlock(*$7))); }
+		;
+
+whilestmt	: TWHILE TLPAREN expr TRPAREN block { $$ = new NWhileStatement(*$3, *$5); }
+			| TWHILE TLPAREN expr TRPAREN stmt { $$ = new NWhileStatement(*$3, *(new NBlock(*$5))); }
+			;
+
+stmt : var_decl TSEMICOLON
+	 | func_decl
+	 | const_decl TSEMICOLON
+	 | expr TSEMICOLON { $$ = new NExpressionStatement(*$1); }
+	 | TRETURN expr TSEMICOLON { $$ = new NReturnStatement(*$2); }
      ;
 
 block : TLBRACE stmts TRBRACE { $$ = $2; }
@@ -73,8 +97,8 @@ var_decl : ident ident { $$ = new NVariableDeclaration(*$1, *$2); }
 		 | ident ident TEQUAL expr { $$ = new NVariableDeclaration(*$1, *$2, $4); }
 		 ;
 
-extern_decl : TEXTERN ident ident TLPAREN func_decl_args TRPAREN
-                { $$ = new NExternDeclaration(*$2, *$3, *$5); delete $5; }
+const_decl	: TCONST ident ident { $$ = new NVariableDeclaration(*$2, *$3); }
+			| TCONST ident ident TEQUAL expr { $$ = new NVariableDeclaration(*$2, *$3, $5); }
             ;
 
 func_decl : ident ident TLPAREN func_decl_args TRPAREN block 
@@ -99,6 +123,7 @@ expr : ident TEQUAL expr { $$ = new NAssignment(*$<ident>1, *$3); }
 	 | numeric
          | expr TMUL expr { $$ = new NBinaryOperator(*$1, $2, *$3); }
          | expr TDIV expr { $$ = new NBinaryOperator(*$1, $2, *$3); }
+		 | expr TMOD expr { $$ = new NBinaryOperator(*$1, $2, *$3); }
          | expr TPLUS expr { $$ = new NBinaryOperator(*$1, $2, *$3); }
          | expr TMINUS expr { $$ = new NBinaryOperator(*$1, $2, *$3); }
  	 | expr comparison expr { $$ = new NBinaryOperator(*$1, $2, *$3); }
