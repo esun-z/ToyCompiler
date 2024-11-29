@@ -1,4 +1,4 @@
-const void printi(int val);
+const void printi;
 
 int doMath(int a) {
   int x = a * 5;
