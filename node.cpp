@@ -37,13 +37,17 @@ void NBinaryOperator::print(int indent) const {
         case TMINUS: std::cout << " - "; break;
         case TMUL: std::cout << " * "; break;
         case TDIV: std::cout << " / "; break;
+        case TMOD: std::cout << " % "; break;
+        case TNOT: std::cout << " !"; break;
+        case TAND: std::cout << " && "; break;
+        case TOR: std::cout << " || "; break;
+
         case TCEQ: std::cout << " == "; break;
         case TCNE: std::cout << " != "; break;
         case TCLT: std::cout << " < "; break;
         case TCLE: std::cout << " <= "; break;
         case TCGT: std::cout << " > "; break;
         case TCGE: std::cout << " >= "; break;
-        case TMOD: std::cout << " %"; break;
         default: std::cout << " op(" << op << ") "; break;
     }
     rhs.print();
