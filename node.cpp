@@ -233,8 +233,22 @@ void NWhileStmt::print(int indent) const {
     std::cout << ") ";
     block.print(indent);
 }
-///////////////////////////////////////////////////
 
+// NBreakStmt 的 print 实现
+void NBreakStmt::print(int indent) const {
+    for(int i = 0; i < indent; ++i) std::cout << " ";
+    std::cout << "break;";
+}
+
+// NContinueStmt 的 print 实现
+void NContinueStmt::print(int indent) const {
+    for(int i = 0; i < indent; ++i) std::cout << " ";
+    std::cout << "continue;";
+}
+
+// 以上为print实现
+///////////////////////////////////////////////////
+// 以下为generateDot实现
 
 // Helper function to escape quotes in labels
 std::string escapeQuotes(const std::string& str) {
@@ -758,14 +772,24 @@ int NWhileStmt::generateDot(std::ostream& out, int& currentId) const {
     return myId;
 }
 
-// NBreakStmt 的 print 实现
-void NBreakStmt::print(int indent) const {
-    for(int i = 0; i < indent; ++i) std::cout << " ";
-    std::cout << "break;";
+// NBreakStmt 的 generateDot 实现
+int NBreakStmt::generateDot(std::ostream& out, int& currentId) const {
+    int myId = currentId++;
+    out << "  node" << myId << " [label=\"NBreakStmt\", shape=rectangle];\n";
+    // break符号
+    int breakId = currentId++;
+    out << "  node" << breakId << " [label=\"break\", shape=ellipse];\n";
+    out << "  node" << myId << " -> node" << breakId << ";\n";
+    return myId;
 }
 
-// NContinueStmt 的 print 实现
-void NContinueStmt::print(int indent) const {
-    for(int i = 0; i < indent; ++i) std::cout << " ";
-    std::cout << "continue;";
+// NContinueStmt 的 generateDot 实现
+int NContinueStmt::generateDot(std::ostream& out, int& currentId) const {
+    int myId = currentId++;
+    out << "  node" << myId << " [label=\"NContinueStmt\", shape=rectangle];\n";
+    // continue符号
+    int continueId = currentId++;
+    out << "  node" << continueId << " [label=\"continue\", shape=ellipse];\n";
+    out << "  node" << myId << " -> node" << continueId << ";\n";
+    return myId;
 }

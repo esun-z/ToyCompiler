@@ -309,3 +309,18 @@ public:
     virtual int generateDot(std::ostream& out, int& currentId) const override;
     
 };
+
+class NBreakStmt : public NStmt {
+public:
+    NBreakStmt() { }
+    //virtual llvm::Value* codeGen(CodeGenContext& context);
+    virtual void print(int indent = 0) const override;
+    virtual int generateDot(std::ostream& out, int& currentId) const override;
+};
+class NContinueStmt : public NStmt {
+public:
+    NContinueStmt() { }
+    //virtual llvm::Value* codeGen(CodeGenContext& context);
+    virtual void print(int indent = 0) const override;
+    virtual int generateDot(std::ostream& out, int& currentId) const override;
+};
