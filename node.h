@@ -45,6 +45,8 @@ public:
     virtual ~Node() {}
     //virtual llvm::Value* codeGen(CodeGenContext& context) { return NULL; }
     virtual void print(int indent = 0) const;
+    // 新增纯虚函数用于生成DOT
+    virtual int generateDot(std::ostream& out, int& currentId) const;
 };
 
 class NCompUnit : public Node {
@@ -60,6 +62,7 @@ public:
     NCompUnit(NDecl& decl) { decls.push_back(&decl); }
     //virtual llvm::Value* codeGen(CodeGenContext& context);
     virtual void print(int indent = 0) const override;
+     virtual int generateDot(std::ostream& out, int& currentId) const override;
 };
 
 class NExpr : public Node {
@@ -82,6 +85,7 @@ public:
         isConst(isConst), id(id), assignmentExpr(assignmentExpr) { }
     //virtual llvm::Value* codeGen(CodeGenContext& context);
     virtual void print(int indent = 0) const override;
+     virtual int generateDot(std::ostream& out, int& currentId) const override;
 };
 
 class NFuncDecl : public NDecl {
@@ -94,6 +98,7 @@ public:
         id(id), arguments(arguments), block(block) { }
     //virtual llvm::Value* codeGen(CodeGenContext& context);
     virtual void print(int indent = 0) const override;
+     virtual int generateDot(std::ostream& out, int& currentId) const override;
 };
 
 class NInteger : public NExpr {
@@ -102,6 +107,7 @@ public:
     NInteger(long long value) : value(value) { }
     //virtual llvm::Value* codeGen(CodeGenContext& context);
     virtual void print(int indent = 0) const override;
+     virtual int generateDot(std::ostream& out, int& currentId) const override;
 };
 
 class NFloat : public NExpr {
@@ -110,6 +116,7 @@ public:
     NFloat(double value) : value(value) { }
     //virtual llvm::Value* codeGen(CodeGenContext& context);
     virtual void print(int indent = 0) const override;
+     virtual int generateDot(std::ostream& out, int& currentId) const override;
 };
 
 class NIdent : public NExpr {
@@ -126,6 +133,7 @@ public:
     NIdent(const std::string& name) : name(name), type(-1) { }
     //virtual llvm::Value* codeGen(CodeGenContext& context);
     virtual void print(int indent = 0) const override;
+     virtual int generateDot(std::ostream& out, int& currentId) const override;
 };
 
 class NMethodCall : public NExpr {
@@ -137,6 +145,7 @@ public:
     NMethodCall(const NIdent& id) : id(id) { }
     //virtual llvm::Value* codeGen(CodeGenContext& context);
     virtual void print(int indent = 0) const override;
+     virtual int generateDot(std::ostream& out, int& currentId) const override;
 };
 
 class NBinaryExpr : public NExpr {
@@ -148,6 +157,7 @@ public:
         lhs(lhs), rhs(rhs), op(op) { }
     //virtual llvm::Value* codeGen(CodeGenContext& context);
     virtual void print(int indent = 0) const override;
+     virtual int generateDot(std::ostream& out, int& currentId) const override;
 };
 
 class NLogicalBinaryExpr : public NExpr {
@@ -162,6 +172,7 @@ public:
 
     //virtual llvm::Value* codeGen(CodeGenContext& context);
     virtual void print(int indent = 0) const override;
+     virtual int generateDot(std::ostream& out, int& currentId) const override;
 };
 
 class NUnaryExpr : public NExpr {
@@ -175,6 +186,7 @@ public:
 
     //virtual llvm::Value* codeGen(CodeGenContext& context);
     virtual void print(int indent = 0) const override;
+     virtual int generateDot(std::ostream& out, int& currentId) const override;
 };
 
 class NLogicalUnaryExpr : public NExpr {
@@ -187,6 +199,7 @@ public:
 
     //virtual llvm::Value *codeGen(CodeGenContext &context);
     virtual void print(int indent = 0) const override;
+     virtual int generateDot(std::ostream& out, int& currentId) const override;
 };
 
 class NAssignment : public NExpr {
@@ -197,6 +210,7 @@ public:
         lhs(lhs), rhs(rhs) { }
     //virtual llvm::Value* codeGen(CodeGenContext& context);
     virtual void print(int indent = 0) const override;
+     virtual int generateDot(std::ostream& out, int& currentId) const override;
 };
 
 class NBlock : public NStmt {
@@ -206,6 +220,7 @@ public:
     NBlock(NStmt& statement) { statements.push_back(&statement); }
     //virtual llvm::Value* codeGen(CodeGenContext& context);
     virtual void print(int indent = 0) const override;
+     virtual int generateDot(std::ostream& out, int& currentId) const override;
 };
 
 class NExprStmt : public NStmt {
@@ -215,6 +230,7 @@ public:
         expression(expression) { }
     //virtual llvm::Value* codeGen(CodeGenContext& context);
     virtual void print(int indent = 0) const override;
+     virtual int generateDot(std::ostream& out, int& currentId) const override;
 };
 
 class NReturnStmt : public NStmt {
@@ -224,6 +240,7 @@ public:
         expression(expression) { }
     //virtual llvm::Value* codeGen(CodeGenContext& context);
     virtual void print(int indent = 0) const override;
+     virtual int generateDot(std::ostream& out, int& currentId) const override;
 };
 
 // class NVariableDeclaration : public NStmt {
@@ -278,6 +295,7 @@ public:
         condition(condition), trueBlock(trueBlock), falseBlock(nullptr) { };
     // //virtual llvm::Value* codeGen(CodeGenContext& context);
     virtual void print(int indent = 0) const override;
+    virtual int generateDot(std::ostream& out, int& currentId) const override;
 };
 
 class NWhileStmt : public NStmt {
@@ -288,4 +306,6 @@ public:
         condition(condition), block(block) { };
     //virtual llvm::Value* codeGen(CodeGenContext& context);
     virtual void print(int indent = 0) const override;
+    virtual int generateDot(std::ostream& out, int& currentId) const override;
+    
 };

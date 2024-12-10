@@ -32,3 +32,4 @@ parser: $(OBJS)
 
 test: parser example.txt
 	cat example.txt | ./parser
+	dot -Tpng ast.dot -o ast.png
