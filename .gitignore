@@ -5,3 +5,4 @@ tokens.cpp
 parser
 parser.tab.*
 .vscode/*
+.vscode/settings.json
