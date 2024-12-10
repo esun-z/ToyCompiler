@@ -141,7 +141,6 @@ void NAssignment::print(int indent) const {
 void NBlock::print(int indent) const {
     std::cout << "{\n";
     for(auto stmt : statements) {
-        for(int i = 0; i < indent + 2; ++i) std::cout << " ";
         stmt->print(indent + 2);
         std::cout << "\n";
     }
