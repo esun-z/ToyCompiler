@@ -65,10 +65,10 @@
 /* Operator precedence for mathematical operators */
 %left TPLUS TMINUS
 %left TMUL TDIV TMOD
+%nonassoc TCEQ TCNE TCLT TCLE TCGT TCGE
 %left TOR
 %left TAND
 %nonassoc TNOT
-%nonassoc TCEQ TCNE TCLT TCLE TCGT TCGE
 
 %left TEQUAL
 
@@ -119,6 +119,8 @@ stmt : var_decl TSEMICOLON { $$ = $1; }
 	 | TRETURN expr TSEMICOLON { $$ = new NReturnStmt(*$2); }
 	 | ifstmt { $$ = $1; }
 	 | whilestmt { $$ = $1; }
+	 | TBREAK TSEMICOLON { $$ = new NBreakStmt(); }
+	 | TCONTINUE TSEMICOLON { $$ = new NContinueStmt(); }
      ;
 
 ifstmt	: TIF TLPAREN expr TRPAREN block %prec IFX { $$ = new NIfStmt(*$3, *$5); }

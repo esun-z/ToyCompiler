@@ -226,3 +226,15 @@ void NWhileStmt::print(int indent) const {
     std::cout << ") ";
     block.print(indent);
 }
+
+// NBreakStmt 的 print 实现
+void NBreakStmt::print(int indent) const {
+    for(int i = 0; i < indent; ++i) std::cout << " ";
+    std::cout << "break;";
+}
+
+// NContinueStmt 的 print 实现
+void NContinueStmt::print(int indent) const {
+    for(int i = 0; i < indent; ++i) std::cout << " ";
+    std::cout << "continue;";
+}
