@@ -4,10 +4,14 @@
 #include "parser.hpp"
 
 #define SAVE_TOKEN  yylval.string = new std::string(yytext, yyleng)
+#define SAVE_INT yylval.number_int = atoll(yytext)
+#define SAVE_FLOAT yylval.number_float = atof(yytext)
 #define TOKEN(t)    (yylval.token = t)
 
 void SkipSingleLineComment();
 void SkipMultiLineComment();
+
+long long lineCount = 1;
 
 %}
 
@@ -16,7 +20,8 @@ void SkipMultiLineComment();
 %%
 "//".*  { SkipSingleLineComment();}
 "/*"    { SkipMultiLineComment();}
-[ \t\n]					        ;
+[ \t]					        ;
+\n                              lineCount++;
 "const"                        return TOKEN(TCONST);
 "if"                            return TOKEN(TIF);
 "else"                          return TOKEN(TELSE);
@@ -24,9 +29,12 @@ void SkipMultiLineComment();
 "break"                         return TOKEN(TBREAK);
 "continue"                      return TOKEN(TCONTINUE);
 "return"				        return TOKEN(TRETURN);
+"int"                           return TOKEN(TINTTYPE);
+"float"                         return TOKEN(TFLOATTYPE);
+"void"                          return TOKEN(TVOIDTYPE);
 [a-zA-Z_][a-zA-Z0-9_]*  SAVE_TOKEN; return TIDENTIFIER;
-[0-9]+\.[0-9]* 			    SAVE_TOKEN; return TFLOAT;
-[0-9]+					        SAVE_TOKEN; return TINTEGER;
+[0-9]+\.[0-9]* 			    SAVE_FLOAT; return TFLOAT;
+[0-9]+					        SAVE_INT; return TINTEGER;
 
 "="						          return TOKEN(TEQUAL);
 "=="				          	return TOKEN(TCEQ);

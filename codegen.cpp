@@ -45,7 +45,7 @@ GenericValue CodeGenContext::runCode() {
 }
 
 /* Returns an LLVM type based on the identifier */
-static Type *typeOf(const NIdentifier& type) 
+static Type *typeOf(const NIdent& type) 
 {
 	if (type.name.compare("int") == 0) {
 		return Type::getInt64Ty(MyContext);
@@ -70,7 +70,7 @@ Value* NDouble::codeGen(CodeGenContext& context)
 	return ConstantFP::get(Type::getDoubleTy(MyContext), value);
 }
 
-Value* NIdentifier::codeGen(CodeGenContext& context)
+Value* NIdent::codeGen(CodeGenContext& context)
 {
 	std::cout << "Creating identifier reference: " << name << endl;
 	if (context.locals().find(name) == context.locals().end()) {
@@ -98,7 +98,7 @@ Value* NMethodCall::codeGen(CodeGenContext& context)
 	return call;
 }
 
-Value* NBinaryOperator::codeGen(CodeGenContext& context)
+Value* NBinaryExpr::codeGen(CodeGenContext& context)
 {
 
 	std::cout << "Creating binary operation " << op << endl;
@@ -139,13 +139,13 @@ Value* NBlock::codeGen(CodeGenContext& context)
 	return last;
 }
 
-Value* NExpressionStatement::codeGen(CodeGenContext& context)
+Value* NExprStmt::codeGen(CodeGenContext& context)
 {
 	std::cout << "Generating code for " << typeid(expression).name() << endl;
 	return expression.codeGen(context);
 }
 
-Value* NReturnStatement::codeGen(CodeGenContext& context)
+Value* NReturnStmt::codeGen(CodeGenContext& context)
 {
 	std::cout << "Generating return code for " << typeid(expression).name() << endl;
 	Value *returnValue = expression.codeGen(context);

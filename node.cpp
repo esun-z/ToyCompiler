@@ -2,18 +2,44 @@
 #include "node.h"
 #include "parser.hpp" // 包含 token 定义
 
+void Node::print(int indent) const {
+    for(int i = 0; i < indent; ++i) std::cout << " ";
+    std::cout << "$";
+}
+
+void NCompUnit::print(int indent) const {
+    for(auto decl : decls) {
+        decl->print(indent);
+        std::cout << "\n";
+    }
+}
+
 // NInteger 的 print 实现
 void NInteger::print(int indent) const {
     std::cout << value;
 }
 
 // NDouble 的 print 实现
-void NDouble::print(int indent) const {
+void NFloat::print(int indent) const {
     std::cout << value;
 }
 
 // NIdentifier 的 print 实现
-void NIdentifier::print(int indent) const {
+void NIdent::print(int indent) const {
+    switch (type)
+    {
+    case TINTTYPE:
+        std::cout << "int ";
+        break;
+    case TFLOATTYPE:
+        std::cout << "float ";
+        break;
+    case TVOIDTYPE:
+        std::cout << "void ";
+        break;
+    default:
+        break;
+    }
     std::cout << name;
 }
 
@@ -30,23 +56,78 @@ void NMethodCall::print(int indent) const {
 }
 
 // NBinaryOperator 的 print 实现
-void NBinaryOperator::print(int indent) const {
+void NBinaryExpr::print(int indent) const {
     lhs.print();
     switch(op) {
         case TPLUS: std::cout << " + "; break;
         case TMINUS: std::cout << " - "; break;
         case TMUL: std::cout << " * "; break;
         case TDIV: std::cout << " / "; break;
-        case TCEQ: std::cout << " == "; break;
-        case TCNE: std::cout << " != "; break;
-        case TCLT: std::cout << " < "; break;
-        case TCLE: std::cout << " <= "; break;
-        case TCGT: std::cout << " > "; break;
-        case TCGE: std::cout << " >= "; break;
         case TMOD: std::cout << " %"; break;
         default: std::cout << " op(" << op << ") "; break;
     }
     rhs.print();
+}
+
+void NLogicalBinaryExpr::print(int ident) const {
+    lhs.print();
+    switch (op)
+    {
+    case TCEQ:
+        std::cout << " == ";
+        break;
+    case TCNE:
+        std::cout << " != ";
+        break;
+    case TCLT:
+        std::cout << " < ";
+        break;
+    case TCLE:
+        std::cout << " <= ";
+        break;
+    case TCGT:
+        std::cout << " > ";
+        break;
+    case TCGE:
+        std::cout << " >= ";
+        break;
+    case TAND:
+        std::cout << " && ";
+        break;
+    case TOR:
+        std::cout << " || ";
+        break;
+    default:
+        std::cout << " op(" << op << ") ";
+        break;
+    }
+    rhs.print();
+}
+
+void NUnaryExpr::print(int indent) const {
+    switch (op)
+    {
+    case TMINUS:
+        std::cout << "-";
+        break;
+    default:
+        std::cout << " op(" << op << ") ";
+        break;
+    }
+    expr.print();
+}
+
+void NLogicalUnaryExpr::print(int indent) const {
+    switch (op)
+    {
+    case TNOT:
+        std::cout << "!";
+        break;
+    
+    default:
+        std::cout << " op(" << op << ") ";
+        break;
+    }
 }
 
 // NAssignment 的 print 实现
@@ -69,14 +150,14 @@ void NBlock::print(int indent) const {
 }
 
 // NExpressionStatement 的 print 实现
-void NExpressionStatement::print(int indent) const {
+void NExprStmt::print(int indent) const {
     for(int i = 0; i < indent; ++i) std::cout << " ";
     expression.print();
     std::cout << ";";
 }
 
 // NReturnStatement 的 print 实现
-void NReturnStatement::print(int indent) const {
+void NReturnStmt::print(int indent) const {
     for(int i = 0; i < indent; ++i) std::cout << " ";
     std::cout << "return ";
     expression.print();
@@ -84,10 +165,9 @@ void NReturnStatement::print(int indent) const {
 }
 
 // NVariableDeclaration 的 print 实现
-void NVariableDeclaration::print(int indent) const {
+void NVarDecl::print(int indent) const {
     for(int i = 0; i < indent; ++i) std::cout << " ";
-    type.print();
-    std::cout << " ";
+    if(isConst) std::cout << "const ";
     id.print();
     if(assignmentExpr) {
         std::cout << " = ";
@@ -97,39 +177,35 @@ void NVariableDeclaration::print(int indent) const {
 }
 
 // NConstDeclaration 的 print 实现
-void NConstDeclaration::print(int indent) const {
-    for(int i = 0; i < indent; ++i) std::cout << " ";
-    std::cout << "const ";
-    type.print();
-    std::cout << " ";
-    id.print();
-    if(assignmentExpr) {
-        std::cout << " = ";
-        assignmentExpr->print();
-    }
-    std::cout << ";";
-}
+// void NConstDeclaration::print(int indent) const {
+//     for(int i = 0; i < indent; ++i) std::cout << " ";
+//     std::cout << "const ";
+//     type.print();
+//     std::cout << " ";
+//     id.print();
+//     if(assignmentExpr) {
+//         std::cout << " = ";
+//         assignmentExpr->print();
+//     }
+//     std::cout << ";";
+// }
 
 // NFunctionDeclaration 的 print 实现
-void NFunctionDeclaration::print(int indent) const {
+void NFuncDecl::print(int indent) const {
     for(int i = 0; i < indent; ++i) std::cout << " ";
-    type.print();
-    std::cout << " ";
     id.print();
     std::cout << "(";
     for(size_t i = 0; i < arguments.size(); ++i) {
-        arguments[i]->type.print();
-        std::cout << " ";
         arguments[i]->id.print();
         if(i != arguments.size() - 1)
             std::cout << ", ";
     }
     std::cout << ") ";
-    block.print(indent);
+    block.print(indent); // TODO: 缩进似乎存在问题
 }
 
 // NIfStatement 的 print 实现
-void NIfStatement::print(int indent) const {
+void NIfStmt::print(int indent) const {
     for(int i = 0; i < indent; ++i) std::cout << " ";
     std::cout << "if (";
     condition.print();
@@ -144,7 +220,7 @@ void NIfStatement::print(int indent) const {
 }
 
 // NWhileStatement 的 print 实现
-void NWhileStatement::print(int indent) const {
+void NWhileStmt::print(int indent) const {
     for(int i = 0; i < indent; ++i) std::cout << " ";
     std::cout << "while (";
     condition.print();
