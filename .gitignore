@@ -4,4 +4,4 @@ parser.hpp
 tokens.cpp
 parser
 parser.tab.*
-.vscode
+.vscode/*
