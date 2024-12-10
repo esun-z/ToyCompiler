@@ -21,7 +21,7 @@
 
 using namespace llvm;
 
-class NBlock;
+class NCompUnit;
 
 static LLVMContext MyContext;
 
@@ -37,15 +37,39 @@ class CodeGenContext {
     Function *mainFunction;
 
 public:
-
+    std::map<std::string, Value*> globals;
     Module *module;
     CodeGenContext() { module = new Module("main", MyContext); }
     
-    void generateCode(NBlock& root);
+    void generateCode(NCompUnit& root);
     GenericValue runCode();
-    std::map<std::string, Value*>& locals() { return blocks.top()->locals; }
-    BasicBlock *currentBlock() { return blocks.top()->block; }
-    void pushBlock(BasicBlock *block) { blocks.push(new CodeGenBlock()); blocks.top()->returnValue = NULL; blocks.top()->block = block; }
+    std::map<std::string, Value*>& locals() {
+        return blocks.top()->locals;
+    }
+    BasicBlock *currentBlock() { 
+        if(blocks.empty()) {
+            return NULL;
+        }
+        return blocks.top()->block; 
+    }
+    void pushBlock(BasicBlock *block) {
+        bool notFirstBlock = false;
+        if(notFirstBlock && blocks.top() && blocks.top()->locals.size() > 0) {
+            auto locals = blocks.top()->locals;
+            blocks.push(new CodeGenBlock()); 
+            blocks.top()->returnValue = NULL; 
+            blocks.top()->block = block; 
+            // copy locals
+            for(auto it = locals.begin(); it != locals.end(); ++it) {
+                blocks.top()->locals[it->first] = it->second;
+            }
+        }
+        else {
+            blocks.push(new CodeGenBlock()); 
+            blocks.top()->returnValue = NULL; 
+            blocks.top()->block = block;
+        }
+    }
     void popBlock() { CodeGenBlock *top = blocks.top(); blocks.pop(); delete top; }
     void setCurrentReturnValue(Value *value) { blocks.top()->returnValue = value; }
     Value* getCurrentReturnValue() { return blocks.top()->returnValue; }

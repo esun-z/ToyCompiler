@@ -5,7 +5,7 @@
 using namespace std;
 
 extern int yyparse();
-extern NBlock* programCompUnit;
+extern NCompUnit* programCompUnit;
 
 extern int yydebug;
 
@@ -33,13 +33,13 @@ int main(int argc, char **argv)
     }
 	cout << programCompUnit << endl;
     // see http://comments.gmane.org/gmane.comp.compilers.llvm.devel/33877
-	// InitializeNativeTarget();
-	// InitializeNativeTargetAsmPrinter();
-	// InitializeNativeTargetAsmParser();
-	// CodeGenContext context;
-	// createCoreFunctions(context);
-	// context.generateCode(*programBlock);
-	// context.runCode();
+	InitializeNativeTarget();
+	InitializeNativeTargetAsmPrinter();
+	InitializeNativeTargetAsmParser();
+	CodeGenContext context;
+	createCoreFunctions(context);
+	context.generateCode(*programCompUnit);
+	context.runCode();
 	
 	return 0;
 }

@@ -43,7 +43,7 @@ class Node {
 public:
     Node() { }
     virtual ~Node() {}
-    //virtual llvm::Value* codeGen(CodeGenContext& context) { return NULL; }
+    virtual llvm::Value* codeGen(CodeGenContext& context) { return NULL; }
     virtual void print(int indent = 0) const;
 };
 
@@ -58,7 +58,7 @@ public:
         decls.clear();
     }
     NCompUnit(NDecl& decl) { decls.push_back(&decl); }
-    //virtual llvm::Value* codeGen(CodeGenContext& context);
+    virtual llvm::Value* codeGen(CodeGenContext& context);
     virtual void print(int indent = 0) const override;
 };
 
@@ -80,7 +80,7 @@ public:
         isConst(isConst), id(id) { assignmentExpr = NULL; }
     NVarDecl(bool isConst, NIdent& id, NExpr *assignmentExpr) :
         isConst(isConst), id(id), assignmentExpr(assignmentExpr) { }
-    //virtual llvm::Value* codeGen(CodeGenContext& context);
+    virtual llvm::Value* codeGen(CodeGenContext& context);
     virtual void print(int indent = 0) const override;
 };
 
@@ -92,7 +92,7 @@ public:
     NFuncDecl(const NIdent& id, 
             const VariableList& arguments, NBlock& block) :
         id(id), arguments(arguments), block(block) { }
-    //virtual llvm::Value* codeGen(CodeGenContext& context);
+    virtual llvm::Value* codeGen(CodeGenContext& context);
     virtual void print(int indent = 0) const override;
 };
 
@@ -100,7 +100,7 @@ class NInteger : public NExpr {
 public:
     long long value;
     NInteger(long long value) : value(value) { }
-    //virtual llvm::Value* codeGen(CodeGenContext& context);
+    virtual llvm::Value* codeGen(CodeGenContext& context);
     virtual void print(int indent = 0) const override;
 };
 
@@ -108,7 +108,7 @@ class NFloat : public NExpr {
 public:
     double value;
     NFloat(double value) : value(value) { }
-    //virtual llvm::Value* codeGen(CodeGenContext& context);
+    virtual llvm::Value* codeGen(CodeGenContext& context);
     virtual void print(int indent = 0) const override;
 };
 
@@ -124,7 +124,7 @@ public:
     int type;
     NIdent(const std::string& name, int type) : name(name), type(type) { }
     NIdent(const std::string& name) : name(name), type(-1) { }
-    //virtual llvm::Value* codeGen(CodeGenContext& context);
+    virtual llvm::Value* codeGen(CodeGenContext& context);
     virtual void print(int indent = 0) const override;
 };
 
@@ -135,7 +135,7 @@ public:
     NMethodCall(const NIdent& id, ExprList& arguments) :
         id(id), arguments(arguments) { }
     NMethodCall(const NIdent& id) : id(id) { }
-    //virtual llvm::Value* codeGen(CodeGenContext& context);
+    virtual llvm::Value* codeGen(CodeGenContext& context);
     virtual void print(int indent = 0) const override;
 };
 
@@ -146,7 +146,7 @@ public:
     NExpr& rhs;
     NBinaryExpr(NExpr& lhs, int op, NExpr& rhs) :
         lhs(lhs), rhs(rhs), op(op) { }
-    //virtual llvm::Value* codeGen(CodeGenContext& context);
+    virtual llvm::Value* codeGen(CodeGenContext& context);
     virtual void print(int indent = 0) const override;
 };
 
@@ -160,7 +160,7 @@ public:
     NLogicalBinaryExpr(NExpr& lhs, int op, NExpr& rhs) :
         lhs(lhs), rhs(rhs), op(op) { }
 
-    //virtual llvm::Value* codeGen(CodeGenContext& context);
+    virtual llvm::Value* codeGen(CodeGenContext& context);
     virtual void print(int indent = 0) const override;
 };
 
@@ -173,7 +173,7 @@ public:
     NUnaryExpr(int op, NExpr& expr) :
         op(op), expr(expr) { }
 
-    //virtual llvm::Value* codeGen(CodeGenContext& context);
+    virtual llvm::Value* codeGen(CodeGenContext& context);
     virtual void print(int indent = 0) const override;
 };
 
@@ -185,7 +185,7 @@ public:
 
     NLogicalUnaryExpr(int op, NExpr &expr) : op(op), expr(expr) {}
 
-    //virtual llvm::Value *codeGen(CodeGenContext &context);
+    virtual llvm::Value *codeGen(CodeGenContext &context);
     virtual void print(int indent = 0) const override;
 };
 
@@ -195,7 +195,7 @@ public:
     NExpr& rhs;
     NAssignment(NIdent& lhs, NExpr& rhs) : 
         lhs(lhs), rhs(rhs) { }
-    //virtual llvm::Value* codeGen(CodeGenContext& context);
+    virtual llvm::Value* codeGen(CodeGenContext& context);
     virtual void print(int indent = 0) const override;
 };
 
@@ -204,7 +204,7 @@ public:
     StmtList statements;
     NBlock() { }
     NBlock(NStmt& statement) { statements.push_back(&statement); }
-    //virtual llvm::Value* codeGen(CodeGenContext& context);
+    virtual llvm::Value* codeGen(CodeGenContext& context);
     virtual void print(int indent = 0) const override;
 };
 
@@ -213,7 +213,7 @@ public:
     NExpr& expression;
     NExprStmt(NExpr& expression) : 
         expression(expression) { }
-    //virtual llvm::Value* codeGen(CodeGenContext& context);
+    virtual llvm::Value* codeGen(CodeGenContext& context);
     virtual void print(int indent = 0) const override;
 };
 
@@ -222,7 +222,7 @@ public:
     NExpr& expression;
     NReturnStmt(NExpr& expression) : 
         expression(expression) { }
-    //virtual llvm::Value* codeGen(CodeGenContext& context);
+    virtual llvm::Value* codeGen(CodeGenContext& context);
     virtual void print(int indent = 0) const override;
 };
 
@@ -276,7 +276,7 @@ public:
         condition(condition), trueBlock(trueBlock), falseBlock(&falseBlock) { };
     NIfStmt(NExpr& condition, NBlock& trueBlock) :
         condition(condition), trueBlock(trueBlock), falseBlock(nullptr) { };
-    // //virtual llvm::Value* codeGen(CodeGenContext& context);
+    virtual llvm::Value* codeGen(CodeGenContext& context);
     virtual void print(int indent = 0) const override;
 };
 
@@ -286,7 +286,7 @@ public:
     NBlock& block;
     NWhileStmt(NExpr& condition, NBlock& block) :
         condition(condition), block(block) { };
-    //virtual llvm::Value* codeGen(CodeGenContext& context);
+    virtual llvm::Value* codeGen(CodeGenContext& context);
     virtual void print(int indent = 0) const override;
 };
 
