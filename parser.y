@@ -65,9 +65,9 @@
 /* Operator precedence for mathematical operators */
 %left TPLUS TMINUS
 %left TMUL TDIV TMOD
-%nonassoc TNOT
-%left TAND
 %left TOR
+%left TAND
+%nonassoc TNOT
 %nonassoc TCEQ TCNE TCLT TCLE TCGT TCGE
 
 %left TEQUAL
