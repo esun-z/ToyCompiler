@@ -7,7 +7,10 @@
 	NCompUnit *programCompUnit; /* the top level root node of our final AST */
 
 	extern int yylex();
-	void yyerror(const char *s) { std::printf("Error: %s\n", s);std::exit(1); }
+
+	
+
+	void yyerror(const char *s);
 %}
 
 /* Represents the many different ways we can access our data */
@@ -37,11 +40,12 @@
 %token <number_float> TFLOAT
 %token <string> TIDENTIFIER 
 %token <token> TCEQ TCNE TCLT TCLE TCGT TCGE TEQUAL
-%token <token> TLPAREN TRPAREN TLBRACKET TRBRACKET TLBRACE TRBRACE TCOMMA TDOT TSEMICOLON
+%token <token> TLPAREN TRPAREN TLBRACKET TRBRACKET TLBRACE TRBRACE TCOMMA TSEMICOLON TDOT
 %token <token> TPLUS TMINUS TMUL TDIV TMOD TNOT
 %token <token> TRETURN TCONST TIF TELSE TWHILE TBREAK TCONTINUE
 %token <token> TOR TAND
 %token <token> TINTTYPE TFLOATTYPE TVOIDTYPE
+%token <token> YYERRORSYMBOL
 
 /* Define the type of node our nonterminal symbols represent.
    The types refer to the %union declaration above. Ex: when
@@ -71,6 +75,8 @@
 %nonassoc TNOT
 
 %left TEQUAL
+
+%define parse.error verbose
 
 %start program
 
@@ -105,12 +111,14 @@ func_decl_args : /*blank*/  { $$ = new VariableList(); }
 
 block : TLBRACE stmts TRBRACE { $$ = $2; }
 	  | TLBRACE TRBRACE { $$ = new NBlock(); }
+	  | error TRBRACE { yyclearin; yyerrok; }
 	  ;
 
 stmts : stmt { $$ = new NBlock(); $$->statements.push_back($1); }
 	  | block { $$ = $1; }
 	  | stmts stmt { $1->statements.push_back($2); }
 	  | stmts block { $$->statements.push_back($2); }
+	  | error TRBRACE { yyclearin; yyerrok; }
 	  ;
 
 stmt : var_decl TSEMICOLON { $$ = $1; }
@@ -121,6 +129,7 @@ stmt : var_decl TSEMICOLON { $$ = $1; }
 	 | whilestmt { $$ = $1; }
 	 | TBREAK TSEMICOLON { $$ = new NBreakStmt(); }
 	 | TCONTINUE TSEMICOLON { $$ = new NContinueStmt(); }
+	 | error TSEMICOLON { yyclearin; yyerrok; }
      ;
 
 ifstmt	: TIF TLPAREN expr TRPAREN block %prec IFX { $$ = new NIfStmt(*$3, *$5); }
@@ -170,3 +179,22 @@ call_args : /*blank*/  { $$ = new ExprList(); }
 		  ;
 
 %%
+
+
+	extern long long lineCount;
+	extern YYSTYPE yylval;
+
+	extern bool hasError;
+
+	void yyerror(const char *s) {
+		hasError = true;
+		std::printf("Error at line %lld: %s\n", lineCount, s);
+		// yyclearin;
+		// skip until next } or ;
+		/* while (yylex() != 0) {
+			if (yylval.token == TRBRACE || yylval.token == TSEMICOLON) {
+				break;
+			}
+		} */
+	}
+	

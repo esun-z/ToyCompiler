@@ -38,12 +38,30 @@ class CodeGenContext {
 
 public:
     std::map<std::string, Value*> globals;
+    std::map<std::string, Value*> mergedLocals;
     Module *module;
     CodeGenContext() { module = new Module("main", MyContext); }
     
     void generateCode(NCompUnit& root);
     GenericValue runCode();
     std::map<std::string, Value*>& locals() {
+        // merge all locals from all blocks
+        // mergedLocals.clear();
+        // std::stack<CodeGenBlock*> buf;
+        // while(!blocks.empty()) {
+        //     auto locals = blocks.top()->locals;
+        //     for(auto it = locals.begin(); it != locals.end(); ++it) {
+        //         mergedLocals[it->first] = it->second;
+        //     }
+        //     buf.push(blocks.top());
+        //     blocks.pop();
+        // }
+
+        // while(!buf.empty()) {
+        //     blocks.push(buf.top());
+        //     buf.pop();
+        // }
+        // return mergedLocals;
         return blocks.top()->locals;
     }
     BasicBlock *currentBlock() { 

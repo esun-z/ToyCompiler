@@ -10,6 +10,8 @@ extern NCompUnit* programCompUnit;
 
 extern int yydebug;
 
+bool hasError = false;
+
 
 
 void open_file(const char* filename) {
@@ -21,11 +23,15 @@ void createCoreFunctions(CodeGenContext& context);
 
 int main(int argc, char **argv)
 {
-	yydebug = 1;
+	yydebug = 0;
 	if (argc > 1) {
 		open_file(argv[1]);
 	}
 	yyparse();
+    if(hasError) {
+        cout << "解析失败，存在语法错误。\n";
+        return 1;
+    }
 	// 提醒：对于新定义的 AST 节点，会将其打印为“$”
     cout << "将语法树还原为源文件如下:\n";
     if(programCompUnit) {

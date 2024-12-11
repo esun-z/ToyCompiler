@@ -1,0 +1,19 @@
+int gba = 0;
+
+int add(int a, int b) {
+    return a+b;
+}
+
+void main() {
+    echo(gba);
+    gba = 2;
+    echo(gba);
+    
+    int a = 2;
+    a = add(a, 2);
+    echo(a);
+    
+    a += 3;
+}
+
+gba = 2;
